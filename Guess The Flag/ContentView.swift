@@ -13,6 +13,10 @@ struct ContentView: View {
     @State private var scoreTitle = ""
     @State private var countries = ["Estonia","France","Germany","Ireland","Italy","Nigeria","Poland","Spain","UK","Ukraine","US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
+    @State private var keepScore = 0
+    @State private var numberScore = 1
+    @State private var pickedCountry = ""
+
     
     var body: some View {
         ZStack{
@@ -26,6 +30,7 @@ struct ContentView: View {
                 Text("Guess the Flag")
                     .font(.largeTitle.bold())
                     .foregroundStyle(.white)
+                    .padding(30)
                 VStack(spacing: 15){
                     VStack{
                         Text("Tap the flag of")
@@ -63,14 +68,28 @@ struct ContentView: View {
         .alert (scoreTitle , isPresented: $showingScore ){
             Button("Continue" , action: askQuestion )
         } message: {
-            Text("Your score is ???")
+            Text("""
+                Your score is \(keepScore)
+                The flagged you picked was \(pickedCountry)
+                """)
+           
         }
     }
     func flagTapped (_ number : Int){
+        pickedCountry = countries[number]
+        
+        
         if number == correctAnswer{
-            scoreTitle = "Correct"
+            scoreTitle = "Q\(numberScore): Correct"
+            keepScore += 1
+            numberScore += 1
+        }else if numberScore == 8{
+            scoreTitle = "Game Over!!! Your final score is \(keepScore)"
+            numberScore = 0
+            keepScore = 0
         }else{
-            scoreTitle = "False"
+            scoreTitle = "Q\(numberScore): False"
+            numberScore += 1
         }
         showingScore = true
     }
